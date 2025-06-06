@@ -58,8 +58,9 @@ async def handle_all_messages(update: Update, context: ContextTypes.DEFAULT_TYPE
     """Gère tous les messages et filtre ceux de la Mini App."""
     
     # Vérifie si le message provient d'une Web App
-    if update.effective_message and update.effective_message.web_app_data:
-        web_app_data = update.effective_message.web_app_data.data
+    message = update.effective_message
+    if message and getattr(message, "web_app_data", None):
+        web_app_data = message.web_app_data.data
         
         try:
             data = json.loads(web_app_data)
@@ -77,7 +78,7 @@ async def handle_all_messages(update: Update, context: ContextTypes.DEFAULT_TYPE
             users = load_users() # Charge les utilisateurs existants
 
             if email in users:
-                await update.message.reply_text(
+                await message.reply_text(
                     f"Bonjour de nouveau, {email} ! Vos informations semblent déjà enregistrées.\n"
                     f"Si vous souhaitez modifier votre mot de passe, utilisez une autre option."
                 )
@@ -86,24 +87,24 @@ async def handle_all_messages(update: Update, context: ContextTypes.DEFAULT_TYPE
                     "telegram_user_id": user_id,
                     "telegram_username": username,
                     "password": password, 
-                    "registration_date": update.message.date.isoformat()
+                    "registration_date": message.date.isoformat()
                 }
                 save_users(users) # Sauvegarde les utilisateurs mis à jour
 
-                await update.message.reply_text(
+                await message.reply_text(
                     f"Merci pour votre inscription, {email} !\n"
                     f"Nous avons bien reçu vos informations et les avons enregistrées."
                 )
 
         except json.JSONDecodeError:
             print(f"Erreur: Données de la Web App non-JSON : {web_app_data}")
-            await update.message.reply_text("Désolé, une erreur est survenue lors de la réception de vos données.")
+            await message.reply_text("Désolé, une erreur est survenue lors de la réception de vos données.")
         except Exception as e:
             print(f"Erreur inattendue lors du traitement des données de la Web App : {e}")
-            await update.message.reply_text("Désolé, une erreur interne est survenue.")
+            await message.reply_text("Désolé, une erreur interne est survenue.")
     else:
-        if update.effective_message.text:
-            await update.message.reply_text(f"J'ai reçu votre message : {update.effective_message.text}. Pour lancer l'application, tapez /start.")
+        if message and getattr(message, "text", None):
+            await message.reply_text(f"J'ai reçu votre message : {message.text}. Pour lancer l'application, tapez /start.")
 
 
 def main() -> None:
@@ -114,7 +115,7 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.ALL, handle_all_messages))
 
     print("Bot démarré. En attente de commandes et de données de Mini App...")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    application.run_polling()
 
 if __name__ == "__main__":
     main()
