@@ -1,169 +1,95 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded - script.js started'); // Message au démarrage du script
+
     // Vérifie si l'SDK Telegram Web App est disponible
     if (window.Telegram && window.Telegram.WebApp) {
         const WebApp = window.Telegram.WebApp;
-
-        // Active le bouton de fermeture par défaut si nécessaire
-        // WebApp.ready(); 
-
-        // Gérer le clic sur le bouton "Fermer l'application"
-        const closeButton = document.getElementById('closeButton');
-        if (closeButton) {
-            closeButton.addEventListener('click', () => {
-                // Ferme la Mini App
-                WebApp.close();
-            });
-        }
-
-        // ---------- Nouvelle logique pour le formulaire ----------
-        const myForm = document.getElementById('myForm');
-        if (myForm) {
-            myForm.addEventListener('submit', (event) => {
-                event.preventDefault(); // Empêche le rechargement de la page par défaut
-
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-
-                console.log('Données du formulaire soumises :');
-                console.log('Email:', email);
-                console.log('Mot de passe:', password);
-
-                // Optionnel : Afficher un message de confirmation à l'utilisateur
-                WebApp.showAlert(`Formulaire soumis !\nEmail: ${email}\nMot de passe: ${password.replace(/./g, '*')}`); // Masque le mdp dans l'alerte
-
-                // ----------- Important pour envoyer des données au bot Telegram -----------
-                // Si vous voulez envoyer ces données au bot Python, vous utiliserez WebApp.sendData()
-                // ou WebApp.sendWebAppMessage().
-                // Par exemple:
-                // WebApp.sendData(JSON.stringify({ email: email, password: password }));
-                // ou (plus polyvalent pour des messages structurés):
-                // WebApp.sendWebAppMessage(JSON.stringify({ type: 'form_submission', email: email, password: password }));
-
-                // Après l'envoi des données, vous pourriez vouloir fermer l'appli ou vider le formulaire
-                // WebApp.close(); // Pour fermer l'appli après envoi
-                // myForm.reset(); // Pour vider le formulaire
-            });
-        }
-        // ---------- Fin de la nouvelle logique pour le formulaire ----------
-
-
-        // Optionnel : Afficher des informations de débogage
-        console.log('Telegram Web App SDK est prêt.');
-        console.log('Thème:', WebApp.themeParams);
-        console.log('User:', WebApp.initDataUnsafe.user);
-
-    } else {
-        console.warn('Telegram Web App SDK non disponible. L\'application ne s\'exécute pas dans Telegram.');
-        // Tu peux ajouter une logique pour afficher un message d'erreur ou de test ici
-        document.querySelector('.container').innerHTML = '<h1>Bonjour en dehors de Telegram!</h1><p>Cette application est conçue pour être exécutée dans Telegram.</p>';
-    }
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.Telegram && window.Telegram.WebApp) {
-        const WebApp = window.Telegram.WebApp;
-
-        // Active le bouton de fermeture par défaut si nécessaire
-        WebApp.ready(); // C'est une bonne pratique de l'appeler pour indiquer que l'appli est prête
+        console.log('Telegram Web App SDK detected.'); // Confirmation du SDK
+        WebApp.ready(); // Indique que l'appli est prête, c'est une bonne pratique
 
         // Gérer le clic sur le bouton "Fermer l'application"
         const closeButton = document.getElementById('closeButton');
         if (closeButton) {
+            console.log('Close button found.');
             closeButton.addEventListener('click', () => {
+                console.log('Close button clicked. Closing WebApp...');
                 WebApp.close(); // Ferme la Mini App
             });
+        } else {
+            console.warn('Close button not found with ID "closeButton"!');
         }
 
-        // Nouvelle logique pour le formulaire
+        // ---------- Logique principale pour le formulaire ----------
         const myForm = document.getElementById('myForm');
         if (myForm) {
+            console.log('Form found with ID "myForm".');
             myForm.addEventListener('submit', (event) => {
                 event.preventDefault(); // Empêche le rechargement de la page par défaut
+                console.log('Form submission event triggered.'); // Message à la soumission
 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
 
-                // Crée un objet JavaScript avec les données du formulaire
-                const formData = {
-                    email: email,
-                    password: password
-                };
+                // Vérification si les éléments input ont bien été trouvés
+                if (!emailInput || !passwordInput) {
+                    console.error('Email or password input elements not found in the DOM!');
+                    WebApp.showAlert('Erreur: Champs du formulaire introuvables.');
+                    return; // Arrête l'exécution
+                }
 
-                // Convertit l'objet en chaîne JSON pour l'envoyer au bot
-                const dataToSend = JSON.stringify(formData);
+                const email = emailInput.value;
+                const password = passwordInput.value;
 
-                // Affiche un message à l'utilisateur via une alerte Telegram
-                WebApp.showAlert(`Formulaire soumis !\nEmail: ${email}\nMot de passe: ${password.replace(/./g, '*')}`);
+                // --- Validation basique côté client (recommandé) ---
+                if (!email || !password) {
+                    WebApp.showAlert('Veuillez remplir tous les champs.');
+                    console.warn('Form submission prevented: fields are empty.');
+                    return;
+                }
+                if (!email.includes('@') || !email.includes('.')) {
+                    WebApp.showAlert('Veuillez entrer une adresse email valide.');
+                    console.warn('Form submission prevented: invalid email format.');
+                    return;
+                }
+                // Vous pouvez ajouter d'autres validations ici (longueur mot de passe, etc.)
+                // --- Fin Validation ---
 
-                // Envoie les données au bot Telegram
-                // WebApp.sendData(dataToSend); // Pour envoyer une simple chaîne de texte (max 4096 octets)
-                // OU, ce qui est plus courant et puissant pour des données structurées:
-                WebApp.sendWebAppMessage(dataToSend); // Permet au bot de recevoir un objet WebAppMessage
-
-                // Tu peux aussi afficher un indicateur de succès ou réinitialiser le formulaire
-                // myForm.reset();
-                // WebApp.close(); // Tu pourrais choisir de fermer l'appli après l'envoi
-            });
-        }
-
-        // Optionnel : Afficher des informations de débogage
-        console.log('Telegram Web App SDK est prêt.');
-        console.log('Thème:', WebApp.themeParams);
-        console.log('User:', WebApp.initDataUnsafe.user);
-
-    } else {
-        console.warn('Telegram Web App SDK non disponible. L\'application ne s\'exécute pas dans Telegram.');
-        document.querySelector('.container').innerHTML = '<h1>Bonjour en dehors de Telegram!</h1><p>Cette application est conçue pour être exécutée dans Telegram.</p>';
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.Telegram && window.Telegram.WebApp) {
-        const WebApp = window.Telegram.WebApp;
-
-        WebApp.ready(); 
-
-        const closeButton = document.getElementById('closeButton');
-        if (closeButton) {
-            closeButton.addEventListener('click', () => {
-                WebApp.close();
-            });
-        }
-
-        const myForm = document.getElementById('myForm');
-        if (myForm) {
-            myForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-
+                // Prépare les données à envoyer
                 const formData = {
                     email: email,
                     password: password
                 };
                 const dataToSend = JSON.stringify(formData);
 
-                // Optionnel: Afficher un message de confirmation à l'utilisateur
+                console.log('Form data prepared:', formData);
+                console.log('Sending data to bot via WebApp.sendWebAppMessage()...');
+
+                // Affiche un message de confirmation à l'utilisateur via une alerte Telegram
                 WebApp.showAlert(`Formulaire soumis !\nEmail: ${email}\nMot de passe: ${password.replace(/./g, '*')}`);
 
                 // Envoie les données au bot Telegram
                 WebApp.sendWebAppMessage(dataToSend);
 
-                // NOUVEAU : Réinitialiser le formulaire après l'envoi
+                // Réinitialise le formulaire après l'envoi
                 myForm.reset(); 
+                console.log('Form reset.');
                 
                 // Optionnel : Vous pouvez aussi fermer l'application après un envoi réussi
                 // WebApp.close(); 
+                // console.log('Web App closed after form submission.');
             });
+        } else {
+            console.error('Form not found with ID "myForm"!'); // Message d'erreur si le formulaire n'est pas trouvé
         }
+        // ---------- Fin de la logique pour le formulaire ----------
 
-        console.log('Telegram Web App SDK est prêt.');
+        // Optionnel : Afficher des informations de débogage générales
+        console.log('Telegram Web App SDK est prêt. Informations supplémentaires :');
         console.log('Thème:', WebApp.themeParams);
         console.log('User:', WebApp.initDataUnsafe.user);
 
     } else {
+        // Logique si l'application n'est pas exécutée dans Telegram
         console.warn('Telegram Web App SDK non disponible. L\'application ne s\'exécute pas dans Telegram.');
         document.querySelector('.container').innerHTML = '<h1>Bonjour en dehors de Telegram!</h1><p>Cette application est conçue pour être exécutée dans Telegram.</p>';
     }
