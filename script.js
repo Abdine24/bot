@@ -117,3 +117,54 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').innerHTML = '<h1>Bonjour en dehors de Telegram!</h1><p>Cette application est conçue pour être exécutée dans Telegram.</p>';
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.Telegram && window.Telegram.WebApp) {
+        const WebApp = window.Telegram.WebApp;
+
+        WebApp.ready(); 
+
+        const closeButton = document.getElementById('closeButton');
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                WebApp.close();
+            });
+        }
+
+        const myForm = document.getElementById('myForm');
+        if (myForm) {
+            myForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                const formData = {
+                    email: email,
+                    password: password
+                };
+                const dataToSend = JSON.stringify(formData);
+
+                // Optionnel: Afficher un message de confirmation à l'utilisateur
+                WebApp.showAlert(`Formulaire soumis !\nEmail: ${email}\nMot de passe: ${password.replace(/./g, '*')}`);
+
+                // Envoie les données au bot Telegram
+                WebApp.sendWebAppMessage(dataToSend);
+
+                // NOUVEAU : Réinitialiser le formulaire après l'envoi
+                myForm.reset(); 
+                
+                // Optionnel : Vous pouvez aussi fermer l'application après un envoi réussi
+                // WebApp.close(); 
+            });
+        }
+
+        console.log('Telegram Web App SDK est prêt.');
+        console.log('Thème:', WebApp.themeParams);
+        console.log('User:', WebApp.initDataUnsafe.user);
+
+    } else {
+        console.warn('Telegram Web App SDK non disponible. L\'application ne s\'exécute pas dans Telegram.');
+        document.querySelector('.container').innerHTML = '<h1>Bonjour en dehors de Telegram!</h1><p>Cette application est conçue pour être exécutée dans Telegram.</p>';
+    }
+});
