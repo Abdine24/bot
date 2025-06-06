@@ -1,32 +1,80 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma Première Mini App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription à la Mini App</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    input {
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px;
+      font-size: 16px;
+      background-color: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #006699;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Bonjour, Monde !</h1>
-        <p>Ceci est ta première Telegram Mini App.</p>
 
-        <form id="myForm">
-            <div class="form-group">
-                <label for="email">Adresse Email :</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Mot de passe :</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Envoyer</button>
-        </form>
+  <h1>Formulaire d'inscription</h1>
+  <form id="form">
+    <input type="email" id="email" placeholder="Votre email" required>
+    <input type="password" id="password" placeholder="Mot de passe" required>
+    <button type="button" id="submit">Envoyer</button>
+  </form>
 
-        <button id="closeButton">Fermer l'application</button>
-    </div>
+  <script>
+    Telegram.WebApp.ready(); // Signale que l'app est prête
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="script.js"></script>
+    document.getElementById("submit").addEventListener("click", function () {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+      }
+
+      const data = {
+        email: email,
+        password: password
+      };
+
+      Telegram.WebApp.sendData(JSON.stringify(data));
+
+      // Réinitialisation du formulaire
+      document.getElementById("email").value = "";
+      document.getElementById("password").value = "";
+
+      alert("Formulaire envoyé !");
+    });
+  </script>
 </body>
 </html>
