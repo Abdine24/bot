@@ -58,3 +58,62 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').innerHTML = '<h1>Bonjour en dehors de Telegram!</h1><p>Cette application est conçue pour être exécutée dans Telegram.</p>';
     }
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.Telegram && window.Telegram.WebApp) {
+        const WebApp = window.Telegram.WebApp;
+
+        // Active le bouton de fermeture par défaut si nécessaire
+        WebApp.ready(); // C'est une bonne pratique de l'appeler pour indiquer que l'appli est prête
+
+        // Gérer le clic sur le bouton "Fermer l'application"
+        const closeButton = document.getElementById('closeButton');
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                WebApp.close(); // Ferme la Mini App
+            });
+        }
+
+        // Nouvelle logique pour le formulaire
+        const myForm = document.getElementById('myForm');
+        if (myForm) {
+            myForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Empêche le rechargement de la page par défaut
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Crée un objet JavaScript avec les données du formulaire
+                const formData = {
+                    email: email,
+                    password: password
+                };
+
+                // Convertit l'objet en chaîne JSON pour l'envoyer au bot
+                const dataToSend = JSON.stringify(formData);
+
+                // Affiche un message à l'utilisateur via une alerte Telegram
+                WebApp.showAlert(`Formulaire soumis !\nEmail: ${email}\nMot de passe: ${password.replace(/./g, '*')}`);
+
+                // Envoie les données au bot Telegram
+                // WebApp.sendData(dataToSend); // Pour envoyer une simple chaîne de texte (max 4096 octets)
+                // OU, ce qui est plus courant et puissant pour des données structurées:
+                WebApp.sendWebAppMessage(dataToSend); // Permet au bot de recevoir un objet WebAppMessage
+
+                // Tu peux aussi afficher un indicateur de succès ou réinitialiser le formulaire
+                // myForm.reset();
+                // WebApp.close(); // Tu pourrais choisir de fermer l'appli après l'envoi
+            });
+        }
+
+        // Optionnel : Afficher des informations de débogage
+        console.log('Telegram Web App SDK est prêt.');
+        console.log('Thème:', WebApp.themeParams);
+        console.log('User:', WebApp.initDataUnsafe.user);
+
+    } else {
+        console.warn('Telegram Web App SDK non disponible. L\'application ne s\'exécute pas dans Telegram.');
+        document.querySelector('.container').innerHTML = '<h1>Bonjour en dehors de Telegram!</h1><p>Cette application est conçue pour être exécutée dans Telegram.</p>';
+    }
+});
