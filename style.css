@@ -1,0 +1,109 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--tg-theme-bg-color, #f0f2f5); /* Couleur de fond de Telegram ou gris clair par défaut */
+    color: var(--tg-theme-text-color, #333); /* Couleur de texte de Telegram ou gris foncé par défaut */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* S'assure que le corps prend au moins toute la hauteur de la fenêtre */
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: var(--tg-theme-secondary-bg-color, #ffffff); /* Couleur de fond secondaire de Telegram ou blanc par défaut */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: var(--tg-theme-text-color, #333);
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--tg-theme-text-color, #555);
+    font-size: 0.95em;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--tg-theme-hint-color, #ccc); /* Couleur de la bordure des inputs */
+    border-radius: 8px;
+    box-sizing: border-box; /* S'assure que padding n'ajoute pas à la largeur totale */
+    font-size: 1em;
+    color: var(--tg-theme-text-color, #333);
+    background-color: var(--tg-theme-bg-color, #f9f9f9); /* Couleur de fond des inputs */
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: var(--tg-theme-link-color, #007bff); /* Couleur de la bordure au focus */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Styles pour le bouton d'envoi du formulaire */
+form button[type="submit"] {
+    background-color: #28a745; /* Vert spécifique pour l'envoi */
+    color: #ffffff; /* Texte blanc */
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+form button[type="submit"]:hover {
+    background-color: #218838; /* Assombrir le vert au survol */
+    transform: translateY(-2px);
+}
+
+/* Styles pour le bouton de fermeture */
+button#closeButton { 
+    background-color: #dc3545; /* Rouge spécifique pour fermer */
+    color: #ffffff; /* Texte blanc */
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button#closeButton:hover {
+    background-color: #c82333; /* Assombrir le rouge au survol */
+    transform: translateY(-2px);
+}
+
+/* Media Queries pour les petits écrans */
+@media (max-width: 600px) {
+    .container {
+        margin: 10px;
+        padding: 20px;
+    }
+}
