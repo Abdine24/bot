@@ -6,12 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Active le bouton de fermeture par défaut si nécessaire
         // WebApp.ready(); 
 
-        // Rends le bouton principal visible (si tu l'utilises)
-        // WebApp.MainButton.setText("Salut depuis ma Mini App !").show();
-        // WebApp.MainButton.onClick(() => {
-        //     alert("Bouton principal cliqué !");
-        // });
-
         // Gérer le clic sur le bouton "Fermer l'application"
         const closeButton = document.getElementById('closeButton');
         if (closeButton) {
@@ -20,6 +14,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 WebApp.close();
             });
         }
+
+        // ---------- Nouvelle logique pour le formulaire ----------
+        const myForm = document.getElementById('myForm');
+        if (myForm) {
+            myForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Empêche le rechargement de la page par défaut
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                console.log('Données du formulaire soumises :');
+                console.log('Email:', email);
+                console.log('Mot de passe:', password);
+
+                // Optionnel : Afficher un message de confirmation à l'utilisateur
+                WebApp.showAlert(`Formulaire soumis !\nEmail: ${email}\nMot de passe: ${password.replace(/./g, '*')}`); // Masque le mdp dans l'alerte
+
+                // ----------- Important pour envoyer des données au bot Telegram -----------
+                // Si vous voulez envoyer ces données au bot Python, vous utiliserez WebApp.sendData()
+                // ou WebApp.sendWebAppMessage().
+                // Par exemple:
+                // WebApp.sendData(JSON.stringify({ email: email, password: password }));
+                // ou (plus polyvalent pour des messages structurés):
+                // WebApp.sendWebAppMessage(JSON.stringify({ type: 'form_submission', email: email, password: password }));
+
+                // Après l'envoi des données, vous pourriez vouloir fermer l'appli ou vider le formulaire
+                // WebApp.close(); // Pour fermer l'appli après envoi
+                // myForm.reset(); // Pour vider le formulaire
+            });
+        }
+        // ---------- Fin de la nouvelle logique pour le formulaire ----------
+
 
         // Optionnel : Afficher des informations de débogage
         console.log('Telegram Web App SDK est prêt.');
